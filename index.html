@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport">
+    <title>To Do List</title>
+    <link rel="stylesheet" href="todo.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>To do List</h1>
+        
+        <div class="warpping-box">
+            <input type="text" id="task-input" placeholder="Enter a your task..." maxlength="26">
+            <button id="add-button">Add</button>
+        </div>
+
+        <ul id="todo-list">
+            </ul>
+    </div>
+
+    <script>
+const taskInput = document.getElementById('task-input');
+const addButton = document.getElementById('add-button');
+const todoList = document.getElementById('todo-list');
+
+function getTasks() {
+    const tasksJSON = localStorage.getItem('tasks');
+    return tasksJSON ? JSON.parse(tasksJSON) : [];
+}
+
+function saveTasks(tasks) {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function renderTasks(tasks) {
+    todoList.innerHTML = ''; 
+    
+    tasks.forEach((task, index) => {
+        
+        const listItem = document.createElement('li');
+        listItem.className = task.completed ? 'completed' : 'done';
+        
+        const taskText = document.createElement('span');
+        taskText.textContent = task.text;
+        
+        const actionsDiv = document.createElement('div');
+        actionsDiv.classList.add('actions');
+        const toggleLabel = document.createElement('label');
+        toggleLabel.classList.add('toggle-switch');
+        
+        const toggleInput = document.createElement('input');
+        toggleInput.type = 'checkbox';
+        toggleInput.checked = task.completed;
+        toggleInput.addEventListener('change', () => toggleComplete(index));
+
+        const sliderSpan = document.createElement('span');
+        sliderSpan.classList.add('slider');
+
+        toggleLabel.appendChild(toggleInput);
+        toggleLabel.appendChild(sliderSpan);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.classList.add('delete-button');
+        deleteButton.addEventListener('click', () => deleteTask(index));
+
+        listItem.appendChild(taskText);
+        
+        actionsDiv.appendChild(toggleLabel);
+        actionsDiv.appendChild(deleteButton);
+        
+        listItem.appendChild(actionsDiv);
+
+        todoList.appendChild(listItem);
+    });
+}
+
+function addTask() {
+    const taskText = taskInput.value.trim();
+    
+    if (taskText === '') {
+        alert('Please enter a task.');
+        return;
+    }
+    
+    let tasks = getTasks();
+
+    tasks.push({ text: taskText, completed: false });
+    
+    saveTasks(tasks);
+    renderTasks(tasks);
+    
+    taskInput.value = ''; 
+}
+
+function deleteTask(index) {
+    let tasks = getTasks();
+    tasks.splice(index, 1); 
+    saveTasks(tasks);
+    renderTasks(tasks);
+}
+
+function toggleComplete(index) {
+    let tasks = getTasks();
+    tasks[index].completed = !tasks[index].completed; // Flip the status
+    
+    saveTasks(tasks);
+    renderTasks(tasks); 
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const initialTasks = getTasks();
+    renderTasks(initialTasks);
+});
+
+addButton.addEventListener('click', addTask);
+
+taskInput.addEventListener('keypress', (event) => {
+  
+    if (event.key === 'Enter') {
+        addTask();
+    }
+});
+    </script>
+
+</body>
+</html>
