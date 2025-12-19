@@ -104,7 +104,7 @@ function deleteTask(index) {
 
 function toggleComplete(index) {
     let tasks = getTasks();
-    tasks[index].completed = !tasks[index].completed; // Flip the status
+    tasks[index].completed = !tasks[index].completed;
     
     saveTasks(tasks);
     renderTasks(tasks); 
@@ -125,4 +125,5 @@ taskInput.addEventListener('keypress', (event) => {
     </script>
 
 </body>
+
 </html>
